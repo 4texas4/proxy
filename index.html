@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultraviolet Proxy</title>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <h1>Ultraviolet Proxy</h1>
+  <p>Paste a URL to proxy:</p>
+  <form id="uv-form">
+    <input id="uv-address" type="text" placeholder="https://example.com" style="width: 300px;">
+    <button type="submit">Go</button>
+  </form>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('UV service worker registered'))
+        .catch(err => console.error('SW registration failed:', err));
+    }
+
+    const form = document.getElementById('uv-form');
+    const input = document.getElementById('uv-address');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let url = input.value.trim();
+      if (!url) return;
+      if (!/^https?:\/\//.test(url)) url = 'https://' + url;
+      const encoded = Ultraviolet.url(url);
+      window.location.href = '/a/' + encoded;
+    });
+  </script>
+
+  <script type="module">
+    importScripts('/uv.bundle.js');
+    importScripts('/cute.config.js');
+  </script>
+  <script src="/uv.client.js"></script>
+</body>
+</html>
